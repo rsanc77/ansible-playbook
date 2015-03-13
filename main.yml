@@ -1,20 +1,18 @@
 ---
 # Server LAMP installation and configuration
-- hosts: xxxxxhost address goes here.xxxxxxxxxxxxxxxxxx
+- hosts: com
   remote_user: root
   
-  pre_tasks:
+  tasks:
     - name: Install epel repo
       yum: name={{ item }} state=present
       with_items:
         - epel-release
         - http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
-    
-  tasks:    
+          
     - name: Update the server prior to installing lamp
       shell: 'yum -y update'
 
-  tasks:
     - name: Install webstack and database to run php-application.
       yum: name={{ item }} state=present
       with_items:
@@ -52,5 +50,5 @@
         - git
         - git-all
         - unison240
-        
- 
+        - vim 
+        - wget

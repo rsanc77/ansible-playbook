@@ -1,0 +1,6 @@
+---
+### DB.ini options ###
+omeka_db_host: 'localhost'
+omeka_db_username: 'omeka'
+omeka_db_password: ''
+omeka_db_prefix: 'omeka_'

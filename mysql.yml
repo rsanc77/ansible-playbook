@@ -1,0 +1,28 @@
+---
+
+- hosts: 
+  remote_user: root
+
+- tasks:
+  - name: Ensure mysql is started and enable on boot
+    service: name=mysql state=started enable=yes
+    
+  - name: Add the Omeka database
+    mysql_db:
+      name: "{{ item.name }}"
+      collation: "{{ item.collation | default('utf8_general_ci') }}"
+      encoding: "{{ item.encoding | default('utf8') }}"
+      state: present
+      with_items:
+        - { name: 'omeka', collation: 'utf8_general_ci', encoding: 'utf8' }
+      
+  
+  - name: Add the default omeka user
+    mysql_user:
+      name: "{{ item.name }}"
+      host: "{{ item.host }}"
+      password: "{{ item.password }}"
+      priv: "{{ item.priv | default('*.*:USAGE') }}"
+      state: present
+      with_items: 
+        - { name: 'omeka', host: 'localhost', password: 'rkspGehd2WR7MJr' }
