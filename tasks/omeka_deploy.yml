@@ -21,7 +21,7 @@
      - { repo: 'CollectionTree',    version: 'v2.0.2' }
      - { repo: 'Commenting',        version: 'v2.1.2' }
      - { repo: 'CSSEditor',         version: 'v1.0.1' }
-     - { repo: 'CSVImport',         version: 'v2.0.3' }
+     - { repo: 'CsvImport',         version: 'v2.0.3' }
      - { repo: 'Dropbox',           version: 'v0.7.2' }
      - { repo: 'ExhibitBuilder',    version: 'v3.1.3' }
      - { repo: 'Geolocation',       version: 'v2.2.3' }

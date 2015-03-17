@@ -26,4 +26,11 @@
     regexp: {{ item.regexp }}
     line:  {{ item.line }}
   with_items:
-    - {regexp: '}
+    - { regexp: 'DocumentRoot "/var/www/html"',       line: 'DocumentRoot /websites' }
+    - { regexp: 'Directory "/var/www/html"',          line: 'Dicrectory "/websites"' }
+    - { regexp: 'AllowOverride None',                 line: 'AllowOverride All' }
+    - { regexp: 'Order allow,deny' ,                  line: 'Order deny,allow' }
+    - { regexp: 'Allow from all',                     line: 'Deny from All' }
+    - { regexp: 'DirectoryIndex',                     line: 'DirectoryIndex index.php' }
+    - { regexp: '#NameVirtualHost',                   line: 'NameVirtualHost'   } 
+    - { regexp: '#Include conf/virtual_hosts/*.conf', line: 'Include conf/virtual_hosts/*.conf' }

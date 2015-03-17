@@ -47,6 +47,8 @@
     - unison240
     - vim 
     - wget
+    - poppler-utils
+    - mailx
 
 - name: Set up an amin user
   user: 
