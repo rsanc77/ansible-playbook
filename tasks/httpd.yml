@@ -1,0 +1,29 @@
+---
+##############################################################
+#   initial setup of appache 
+#   set up will accomplish creating
+#   /websites directory
+#   /etc/httpd/conf/virtual_hosts directory
+#   
+#   disable mod_php so that we can use it as a cgi
+# ############################################################
+
+- name: Setup default Websites and virtual_hosts directory directory
+  file: 
+    path: {{ item.path }}
+    mode: 0644
+  with_items:
+    - { path: '/websites', mode: 0644 }
+    - { path: '/etc/httpd/conf/virtual_hosts', mode: 0655 }
+
+
+- name: Disable the apache module mod_php
+  apache2_module: state=absent name=mod_php
+
+- name: Configure httpd.conf
+  lineinfile:
+    dest: '/etc/httpd/conf/httpd.conf'
+    regexp: {{ item.regexp }}
+    line:  {{ item.line }}
+  with_items:
+    - {regexp: '}
