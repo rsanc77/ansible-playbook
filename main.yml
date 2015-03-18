@@ -1,8 +1,8 @@
 ---
 # Server LAMP installation and configuration
-- hosts:
+- hosts: 
   remote_user: root
   
   tasks:
- #   - include: tasks/server_setup.yml
+#    - include: tasks/server_setup.yml
     - include: tasks/httpd.yml

@@ -49,6 +49,7 @@
     - wget
     - poppler-utils
     - mailx
+    - libselinux-python
 
 - name: Set up an amin user
   user: 
@@ -56,3 +57,6 @@
     comment: "Server Administrator" 
     groups: 'wheel' 
     append: 'yes' 
+
+- name: Disable selinux
+  selinux: state=disabled
