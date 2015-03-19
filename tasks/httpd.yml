@@ -25,4 +25,18 @@
   command: mv php.conf php chdir=/etc/httpd/conf.d 
   when: php_conf.stat.exists
 
-
+- name: start Apache
+  service: name="{{ item }}" state=started
+  with_items:
+     - httpd
+     - mysqld
+     - php-fpm
+     
+- name: Ensure all services will restart upon reboot
+  service: 
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - httpd
+    - mysqld
+    - php-fpm

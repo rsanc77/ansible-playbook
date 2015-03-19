@@ -1,0 +1,39 @@
+# Begin {{ fqdn }} section
+<VirtualHost *:80>
+    DocumentRoot /websites/{{ project_name }}/www/
+    ServerName {{ fqdn }}
+    ServerAlias www.{{ fqdn }}
+
+    RewriteEngine On
+    RewriteCond %{HTTP_HOST}    !^{{ fqdn|e }}$ [NC]
+    RewriteRule ^/(.*)  http://{{ fqdn }}/$1 [R=301]
+
+    ErrorLog /logs/apache/current/{{ fqdn }}-error_log
+    CustomLog /logs/apache/current/{{ fqdn }}-access_log combined
+    
+    <Directory "/websites/{{ project_name }}/www">
+        AllowOverride All
+        Order deny,allow
+        Allow from all
+    </Directory>
+    <IfModule mod_fastcgi.c>
+        SuexecUserGroup {{ project_name }} {{ project_name }}
+        <FilesMatch \.php$>
+            SetHandler php-fastcgi
+        </FilesMatch>
+        
+        Action php-fastcgi /php-fpm
+        Alias /php-fpm /websites/{{ project_name }}/var/php.fpm
+        FastCGIExternalServer /websites/{{ project_name }}/var/php.fpm -socket /websites/{{ project_name }}/var/php-fpm.sock -user {{ project_name }} -group {{ project_name }} -idle-timeout 150 -flush
+        AddType application/x-httpd-fastphp5 .php
+        <Directory "/websites/{{ project_name }}/var">
+            Order deny,allow
+            Deny from all
+            <Files "php.fpm">
+                Order allow,deny
+                Allow from all
+            </Files>
+        </Directory>
+    </IfModule>
+</VirtualHost>
+# End {{ fqdn }} section
