@@ -1,13 +1,24 @@
 ---
+- name: Check if the www folder exists 
+  stat: path=/webdata/omeka/www
+  register: not_initial_commit
+  
+- name: Get a timestamp for the file 
+  command: date +%Y%m%d%H%M%S
+  register: timestamp
+  
+- name: If this is not the initial commit mv www folder to archive
+  command: mv /webdata/omeka/www /webdata/omeka/archive/{{ timestamp.stdout }} 
+  when: not_initial_commit.stat.exists
 
-- name: Install or Update Repo
+- name: Install or update repo
   git: 
     repo: "{{ item.r }}" 
     dest: "{{ item.d }}" 
     version: "{{ item.v }}" 
     update: yes
   with_items:
-    - { r: 'https://github.com/omeka/Omeka.git', d: '/webdata/omeka/www',  v: 'v2.2.2' }
+    - { r: 'https://github.com/omeka/Omeka.git', d: '/webdata/omeka/www',  v: 'v2.3' }
 
 
 - name: Install Or update Plugins
@@ -57,7 +68,7 @@
     
    
 - name: fill in db.ini
-  template: src=./templates/db.ini dest=/webdata/omeka/www/db.ini owner=omeka group=omeka mode=0644
+  template: src=./templates/db.ini.j2 dest=/webdata/omeka/www/db.ini owner=omeka group=omeka mode=0644
 
 - name: change www owner adn group
   raw: chown omeka:omeka /webdata/omeka/www

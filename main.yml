@@ -2,7 +2,13 @@
 # Server LAMP installation and configuration
 - hosts: 
   remote_user: root
+  vars: 
+    omeka_db_host: "localhost" 
+    omeka_db_username: "omeka"
+    omeka_db_password: "omeka_password"
+    omeka_db_name:  "omeka"
+    omeka_db_prefix: "_omeka"
   
   tasks:
 #    - include: tasks/server_setup.yml
-    - include: tasks/httpd.yml
+    - include: tasks/omeka_deploy.yml
