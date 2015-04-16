@@ -60,15 +60,21 @@
      - { repo: 'santa-fe',   version: 'v2.0.1' }
      - { repo: 'seasons',    version: 'v2.2.1' }
 
-- name: Copy htaccess, configfiles
+- name: Copy htaccess
   raw: cp /webdata/omeka/www/.htaccess.changeme /webdata/omeka/www/.htaccess
     
-- name: Copy htaccess, configfiles
+- name: Copy config.ini
   raw: cp /webdata/omeka/www/application/config/config.ini.changeme /webdata/omeka/www/application/config/config.ini
     
    
 - name: fill in db.ini
   template: src=./templates/db.ini.j2 dest=/webdata/omeka/www/db.ini owner=omeka group=omeka mode=0644
 
+- name: Remove files folder
+  raw: rm -fr /webdata/omeka/www/files
+  
+- name: Create the link to the files folder
+  file: src=/webdata/omeka/files dest=/webdata/omeka/www/files owner=omeka group=omeka state=link
+
 - name: change www owner adn group
-  raw: chown omeka:omeka /webdata/omeka/www
+  raw: chown -R omeka:omeka /webdata/omeka

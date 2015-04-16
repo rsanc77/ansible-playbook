@@ -58,7 +58,7 @@
     groups: 'wheel' 
     append: 'yes' 
     
-- name: Cfreate the sftp user
+- name: Create the sftp user
   group: 
     name: "{{ item }}"
     state: "present"
