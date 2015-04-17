@@ -1,1 +1,12 @@
 ---
+##seting up default directory variables
+- name: Set virtual hoss folder location
+  command: echo "/etc/httpd/conf/virtual_hosts"
+  register: virtual_hosts
+
+- name: set db host
+  command: echo "mysql.localdomain"
+  register: mysqld_access_point
+
+- name: Create the virtual hosts configuration file
+  template: src=./templates/virtual_host.j2 dest=/etc/httpd/conf/virtual_hosts/{{ project_name }}.conf

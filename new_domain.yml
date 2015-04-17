@@ -1,0 +1,11 @@
+---
+# Server LAMP installation and configuration
+- hosts: 
+  remote_user: root
+  vars_prompt:
+    fqdm: "define it's fully qualified domain name eg mySite.com"
+    project_name: "what is the projects name"
+  
+  tasks:
+    - include: tasks/new_domain.yml
+ 
