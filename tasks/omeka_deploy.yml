@@ -1,15 +1,12 @@
 ---
-- name: Check if the www folder exists 
-  stat: path=/webdata/omeka/www
-  register: not_initial_commit
-  
 - name: Get a timestamp for the file 
   command: date +%Y%m%d%H%M%S
   register: timestamp
-  
-- name: If this is not the initial commit mv www folder to archive
-  command: mv /webdata/omeka/www /webdata/omeka/archive/{{ timestamp.stdout }} 
-  when: not_initial_commit.stat.exists
+
+- name: set the releases variable
+  command: echo "/webdata/omeka/releases/{{ timestamp.stdout }}"
+  register: releases
+
 
 - name: Install or update repo
   git: 
@@ -18,13 +15,13 @@
     version: "{{ item.v }}" 
     update: yes
   with_items:
-    - { r: 'https://github.com/omeka/Omeka.git', d: '/webdata/omeka/www',  v: 'v2.3' }
+    - { r: 'https://github.com/omeka/Omeka.git', d: '{{ releases.stdout }}',  v: 'v2.3' }
 
 
 - name: Install Or update Plugins
   git: 
     repo: "https://github.com/omeka/plugin-{{ item.repo }}.git" 
-    dest: "/webdata/omeka/www/plugins/{{ item.repo }}" 
+    dest: "{{ releases.stdout }}/plugins/{{ item.repo }}" 
     version: "{{ item.version }}"
     update: yes        
   with_items:
@@ -34,47 +31,64 @@
      - { repo: 'CSSEditor',         version: 'v1.0.1' }
      - { repo: 'CsvImport',         version: 'v2.0.3' }
      - { repo: 'Dropbox',           version: 'v0.7.2' }
-     - { repo: 'ExhibitBuilder',    version: 'v3.1.3' }
+     - { repo: 'ExhibitBuilder',    version: 'v3.2'   }
      - { repo: 'Geolocation',       version: 'v2.2.3' }
      - { repo: 'ItemRelations',     version: 'v2.0.2' }
      - { repo: 'LcSuggest',         version: 'v2.0'   }
      - { repo: 'PdfText',           version: 'v1.0'   }
-     - { repo: 'RedactElements',    version: 'master' }
+     - { repo: 'RedactElements',    version: 'v1.0'   }
      - { repo: 'Reports',           version: 'v2.0.1' }
      - { repo: 'SearchByMetadata',  version: 'v1.2'   }
      - { repo: 'SimpleContactForm', version: 'v0.5'   }
-     - { repo: 'SimplePages',       version: 'v3.0.4' }
+     - { repo: 'SimplePages',       version: 'v3.0.5' }
      
 - name: Install or update themes
   git:
     repo: "https://github.com/omeka/theme-{{ item.repo }}.git" 
-    dest: "/webdata/omeka/www/themes/{{ item.repo }}" 
+    dest: "{{ releases.stdout }}/themes/{{ item.repo }}" 
     version: "{{ item.version }}"
     update: yes 
   with_items:
-     - { repo: 'thanksroy',  version: 'v2.2.1' }
-     - { repo: 'berlin',     version: 'v2.2.1' }
-     - { repo: 'emiglio',    version: 'v2.0.3' }
-     - { repo: 'minimalist', version: 'v2.0.1' }
-     - { repo: 'rhythm',     version: 'v2.0.1' }
-     - { repo: 'santa-fe',   version: 'v2.0.1' }
-     - { repo: 'seasons',    version: 'v2.2.1' }
+     - { repo: 'berlin',     version: 'v2.3' }
+     - { repo: 'emiglio',    version: 'v2.1' }
+     - { repo: 'minimalist', version: 'v2.1' }
+     - { repo: 'rhythm',     version: 'v2.1' }
+     - { repo: 'santa-fe',   version: 'v2.1' }
+     - { repo: 'seasons',    version: 'v2.3' }
+
+- name: install or update default theme (thanksroy)
+  git:
+    repo: "https://github.com/omeka/theme-{{ item.repo }}.git" 
+    dest: "{{ releases.stdout }}/themes/default" 
+    version: "{{ item.version }}"
+    update: yes 
+  with_items:
+     - { repo: 'thanksroy',     version: 'v2.3' }
+
 
 - name: Copy htaccess
-  raw: cp /webdata/omeka/www/.htaccess.changeme /webdata/omeka/www/.htaccess
+  raw: cp {{ releases.stdout }}/.htaccess.changeme {{ releases.stdout }}/.htaccess
     
-- name: Copy config.ini
-  raw: cp /webdata/omeka/www/application/config/config.ini.changeme /webdata/omeka/www/application/config/config.ini
-    
+- name: Copy create the errors.log file
+  raw:  touch {{ releases.stdout }}/application/logs/errors.log
+
+- name: Add config.ini to config folder 
+  template: src=./templates/config.ini.j2 dest={{ releases.stdout }}/application/config/config.ini owner=omeka group=omeka mode=0644    
    
 - name: fill in db.ini
-  template: src=./templates/db.ini.j2 dest=/webdata/omeka/www/db.ini owner=omeka group=omeka mode=0644
+  template: src=./templates/db.ini.j2 dest={{ releases.stdout }}/db.ini owner=omeka group=omeka mode=0644
 
 - name: Remove files folder
-  raw: rm -fr /webdata/omeka/www/files
+  raw: rm -fr {{ releases.stdout }}/files
   
 - name: Create the link to the files folder
-  file: src=/webdata/omeka/files dest=/webdata/omeka/www/files owner=omeka group=omeka state=link
+  file: src=/webdata/omeka/files dest={{ releases.stdout }}/files owner=omeka group=omeka state=link
 
 - name: change www owner adn group
   raw: chown -R omeka:omeka /webdata/omeka
+
+- name: Unlink old www folder
+  raw: rm -fr /webdata/omeka/www
+
+- name: Link the new release
+  file: src={{ releases.stdout }} dest=/webdata/omeka/www owner=omeka group=omeka state=link
