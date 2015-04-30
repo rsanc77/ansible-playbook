@@ -1,0 +1,45 @@
+; Start a new pool named 'www'.
+; For an explenation of each line please look at www.conf
+;
+[{{ project_name }}]
+
+listen = /websites/{{ project_name }}/var/php-fpm.sock
+
+listen.allowed_clients = 127.0.0.1
+
+listen.owner = {{ project_name }}
+listen.group = {{ project_name }}
+listen.mode = 0666
+
+user = {{ project_name }}
+group = {{ project_name }}
+
+pm = ondemand
+
+pm.max_children = 50
+
+pm.start_servers = 2
+
+pm.min_spare_servers = 2
+
+pm.max_spare_servers = 35
+ 
+slowlog = /var/log/php-fpm/www-slow.log
+
+php_admin_flag[log_errors] = on
+
+; Set session path to a directory owned by process user
+php_value[session.save_handler] = files
+
+php_admin_value[auto_prepend_file] = /websites/{{ project_name }}/var/phpfix
+php_admin_value[upload_tmp_dir]    = /websites/{{ project_name }}/var/tmp
+php_value[session.save_path]       = /websites/{{ project_name }}/var/phpsessions
+php_admin_value[error_log]         = /websites/{{ project_name }}/var/php-error.log
+php_admin_value[doc_root]          = /websites/{{ project_name }}/www
+
+php_admin_value[upload_max_filesize] = 16M
+php_admin_value[cgi.fix_pathinfo]    = 0
+php_admin_value[post_max_size]       = 16M
+php_admin_value[date.timezone]       = America/New_York
+
+

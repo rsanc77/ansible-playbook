@@ -6,7 +6,31 @@
 
 - name: set db host
   command: echo "mysql.localdomain"
-  register: mysqld_access_point
+  register: mysql_hosm
+
+- name: set websites directory
+  command: echo "/websites"
+  register: websites
+
+
+- name: create project folders
+  raw: mkdir -p /websites/{{ project_name }}/{home,www,var/phpsessions}
+  
+- name: Create the project user and group.
+  user: name={{ project_name }} comment={{ fqdn }} groups=projects shell=/bin/false home="/websites/{{ project_name }}/home"
+
+- name: Create the projects sftp user
+  user: name={{ project_name }}_sftp comment="SFTP user for {{ fqdn }}" groups=sftponly,{{ project_name }} shell=/bin/false home="/websites/{{ project_name }}"
+   
 
 - name: Create the virtual hosts configuration file
   template: src=./templates/virtual_host.j2 dest=/etc/httpd/conf/virtual_hosts/{{ project_name }}.conf
+  
+- name: Create php-fpm configuration file
+  template: src=./templates/php-fpm.conf.j2 dest=/etc/php-fpm.d/{{ project_name }}.conf
+
+- name: Copy phpfix file into projects var directory
+  copy: src=./phpfix dest=/websites/{{ project_name }}/var/phpfix
+  
+- name: Create the projects database
+  mysql_db: name={{ project_name }} state=present
