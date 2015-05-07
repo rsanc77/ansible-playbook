@@ -6,7 +6,11 @@
 
 - name: set db host
   command: echo "mysql.localdomain"
-  register: mysql_hosm
+  register: mysql_host
+  
+- name: Create Random password
+  command: cat /dev/urandom | tr -cd "[:alnum:]" | head -c 25
+  register: password
 
 - name: set websites directory
   command: echo "/websites"
@@ -15,6 +19,9 @@
 
 - name: create project folders
   raw: mkdir -p /websites/{{ project_name }}/{home,www,var/phpsessions}
+  
+- name: Save the password to file
+  command: echo "dbuser: {{ project_name }} dbpasswd: {{ password }}" > /websites/{{ project_name }}/home/mysqlinfo
   
 - name: Create the project user and group.
   user: name={{ project_name }} comment={{ fqdn }} groups=projects shell=/bin/false home="/websites/{{ project_name }}/home"
@@ -34,3 +41,6 @@
   
 - name: Create the projects database
   mysql_db: name={{ project_name }} state=present
+  
+- name: Create the database user
+  mysql_user: name={{ project_name }} password={{ password }} priv={{ project_name }}.*:ALL host={{ mysql_host }}
