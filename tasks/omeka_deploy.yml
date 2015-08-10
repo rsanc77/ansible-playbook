@@ -14,8 +14,9 @@
     dest: "{{ item.d }}" 
     version: "{{ item.v }}" 
     update: yes
+    accept_hostkey: true
   with_items:
-    - { r: 'https://github.com/omeka/Omeka.git', d: '{{ releases.stdout }}',  v: 'v2.3' }
+    - { r: 'https://github.com/omeka/Omeka.git', d: '{{ releases.stdout }}',  v: 'master' }
 
 
 - name: Install Or update Plugins
@@ -24,37 +25,49 @@
     dest: "{{ releases.stdout }}/plugins/{{ item.repo }}" 
     version: "{{ item.version }}"
     update: yes        
+    accept_hostkey: true
   with_items:
-     - { repo: 'Coins',             version: 'v2.0.3' }
-     - { repo: 'CollectionTree',    version: 'v2.0.2' }
-     - { repo: 'Commenting',        version: 'v2.1.2' }
-     - { repo: 'CSSEditor',         version: 'v1.0.1' }
-     - { repo: 'CsvImport',         version: 'v2.0.3' }
-     - { repo: 'Dropbox',           version: 'v0.7.2' }
-     - { repo: 'ExhibitBuilder',    version: 'v3.2'   }
-     - { repo: 'Geolocation',       version: 'v2.2.3' }
-     - { repo: 'ItemRelations',     version: 'v2.0.2' }
-     - { repo: 'LcSuggest',         version: 'v2.0'   }
-     - { repo: 'PdfText',           version: 'v1.0'   }
-     - { repo: 'RedactElements',    version: 'v1.0'   }
-     - { repo: 'Reports',           version: 'v2.0.1' }
-     - { repo: 'SearchByMetadata',  version: 'v1.2'   }
-     - { repo: 'SimpleContactForm', version: 'v0.5'   }
-     - { repo: 'SimplePages',       version: 'v3.0.5' }
-     
+   - { repo: 'Coins',             version: 'ece0d1b8f4838852d8ca8fcb9f944dd5e1e870b4' }
+   - { repo: 'CollectionTree',    version: '2e34f4c7c26dc3a6aaadd1412a8fdc52e3992ad1' }
+   - { repo: 'Commenting',        version: '7478dd21ee4118f0a9f7e3c6f78bd825bf218fa1' }
+   - { repo: 'CSSEditor',         version: '440647f154c632f387150496bc45ce481c0aaf0e' }
+   - { repo: 'CsvImport',         version: '178b01d4a6a1b59037521110234ca4466dcc838d' }
+   - { repo: 'Dropbox',           version: 'dd35d114c9de19a6db941c85623856b6f3c11b37' }
+   - { repo: 'ExhibitBuilder',    version: '47da937c921ea5b64ee05636bee574da1c46c9a7' }
+   - { repo: 'Geolocation',       version: '280c37a502051c03122e65e51d9ecf0e37b00eaa' }
+   - { repo: 'ItemRelations',     version: '13e7b3d4f288db03e707fc825955b30b784ec53a' }
+   - { repo: 'LcSuggest',         version: 'd16773c86d6e9a8a182ce3ed4a71dc517b77de0b' }
+   - { repo: 'PdfText',           version: 'c89d055d6ac390d7f315ad19ef9d0b9037f76a28' }
+   - { repo: 'RedactElements',    version: '7691eb474f79b0d36ed878a868444f5017fe0386' }
+   - { repo: 'Reports',           version: 'e10a1a001a6f419ea5ac4c3b17c089b17d5d90d9' }
+   - { repo: 'SearchByMetadata',  version: '8f59244bfd07c4e68d509412eed297268e1e8abb' }
+   - { repo: 'SimpleContactForm', version: 'b8613e1d5e38cae7f8541d0573e3c297af9ee851' }
+   - { repo: 'SimplePages',       version: '076c17d3d9c9d8416d5475c665f7f094d9bd1845' }
+
+- name: Install Html5Media
+  git:
+    repo: "https://github.com/omeka/{{ item.repo }}.git"
+    dest: "{{ releases.stdout }}/plugins/{{ item.repo }}"
+    version: "{{ item.version }}"
+    update: yes
+    accept_hostkey: true
+  with_items:
+   - { repo: 'Html5Media', version: 'v2.3'}
+
 - name: Install or update themes
   git:
     repo: "https://github.com/omeka/theme-{{ item.repo }}.git" 
     dest: "{{ releases.stdout }}/themes/{{ item.repo }}" 
     version: "{{ item.version }}"
     update: yes 
+    accept_hostkey: true
   with_items:
-     - { repo: 'berlin',     version: 'v2.3' }
-     - { repo: 'emiglio',    version: 'v2.1' }
-     - { repo: 'minimalist', version: 'v2.1' }
-     - { repo: 'rhythm',     version: 'v2.1' }
-     - { repo: 'santa-fe',   version: 'v2.1' }
-     - { repo: 'seasons',    version: 'v2.3' }
+  - { repo: 'berlin', version: '033671d434eef0ee4791e3b3b927eb669ef8a51d' }
+  - { repo: 'emiglio', version: 'af8fee7e7e37d55850629b05809f76fe431248f1' }
+  - { repo: 'minimalist', version: '1b7311ebdd25fa122d47c289bc73817bb13e6134' }
+  - { repo: 'rhythm', version: 'aae2c1da5ae8ca68319741981ada2fce4d562995' }
+  - { repo: 'santa-fe', version: '5a84db884403a24161b97bbfbe8d8fae44474d83' }
+  - { repo: 'seasons', version: 'c9fe202d25ea86c2cd7064c48ad6531be5dae7da' }
 
 - name: install or update default theme (thanksroy)
   git:
@@ -62,8 +75,9 @@
     dest: "{{ releases.stdout }}/themes/default" 
     version: "{{ item.version }}"
     update: yes 
+    accept_hostkey: true
   with_items:
-     - { repo: 'thanksroy',     version: 'v2.3' }
+     - { repo: 'thanksroy',     version: '498e13060988b720752239778f5231196c46308e' }
 
 
 - name: Copy htaccess
